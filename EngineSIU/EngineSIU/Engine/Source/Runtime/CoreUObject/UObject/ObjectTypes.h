@@ -3,6 +3,7 @@
 
 enum OBJECTS : uint8
 {
+    OBJ_ACTOR,
     OBJ_SPHERE,
     OBJ_CUBE,
     OBJ_SPOTLIGHT,

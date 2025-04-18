@@ -14,11 +14,21 @@ enum class EViewModeIndex : uint8
     VMI_MAX,
 };
 
+enum ELevelTick
+{
+    /** Update the level time only. */
+    LEVELTICK_TimeOnly = 0,
+    /** Update time and viewports. */
+    LEVELTICK_ViewportsOnly = 1,
+    /** Update all. */
+    LEVELTICK_All = 2,
+    /** Delta time is zero, we are paused. Components don't tick. */
+    LEVELTICK_PauseTick = 3,
+};
 
 enum ELevelViewportType : uint8
 {
     LVT_Perspective = 0,
-
     /** Top */
     LVT_OrthoXY = 1,
     /** Bottom */

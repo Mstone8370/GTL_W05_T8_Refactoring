@@ -271,109 +271,256 @@ void ControlEditorPanel::CreateModifyButton(ImVec2 ButtonSize, ImFont* IconFont)
 
     if (ImGui::BeginPopup("PrimitiveControl"))
     {
-        struct Primitive {
+        // struct Primitive {
+        //     const char* label;
+        //     int obj;
+        // };
+        //
+        // static const Primitive primitives[] = {
+        //     { .label= "Cube",      .obj= OBJ_CUBE },
+        //     { .label= "Sphere",    .obj= OBJ_SPHERE },
+        //     { .label= "PointLight", .obj= OBJ_POINTLIGHT },
+        //     { .label= "SpotLight", .obj= OBJ_SPOTLIGHT },
+        //     { .label= "DirectionalLight", .obj= OBJ_DIRECTIONALLGIHT },
+        //     { .label= "AmbientLight", .obj= OBJ_AMBIENTLIGHT },
+        //     { .label= "Particle",  .obj= OBJ_PARTICLE },
+        //     { .label= "Text",      .obj= OBJ_TEXT },
+        //     { .label= "Fireball",  .obj = OBJ_FIREBALL},
+        //     { .label= "Fog",       .obj= OBJ_FOG }
+        // };
+                // for (const auto& primitive : primitives)
+        // {
+        //     if (ImGui::Selectable(primitive.label))
+        //     {
+        //         // GEngineLoop.GetWorld()->SpawnObject(static_cast<OBJECTS>(primitive.obj));
+        //         UWorld* World = GEngine->ActiveWorld;
+        //         AActor* SpawnedActor = nullptr;
+        //         switch (static_cast<OBJECTS>(primitive.obj))
+        //         {
+        //         case OBJ_SPHERE:
+        //         {
+        //             SpawnedActor = World->SpawnActor<AActor>();
+        //             SpawnedActor->SetActorLabel(TEXT("OBJ_SPHERE"));
+        //             USphereComp* SphereComp = SpawnedActor->AddComponent<USphereComp>();
+        //             SphereComp->SetStaticMesh(FObjManager::GetStaticMesh(L"Contents/Sphere.obj"));
+        //             break;
+        //         }
+        //         case OBJ_CUBE:
+        //         {
+        //             // TODO: 다른 부분들 전부 Actor만 소환하도록 하고, Component 생성은 Actor가 자체적으로 하도록 변경.
+        //             ACube* CubeActor = World->SpawnActor<ACube>();
+        //             CubeActor->SetActorLabel(TEXT("OBJ_CUBE"));
+        //             break;
+        //         }
+        //
+        //         case OBJ_SPOTLIGHT:
+        //         {
+        //             ASpotLight* SpotActor = World->SpawnActor<ASpotLight>();
+        //             SpotActor->SetActorLabel(TEXT("OBJ_SPOTLIGHT"));
+        //             break;
+        //         }
+        //         case OBJ_POINTLIGHT:
+        //         {
+        //             APointLight* LightActor = World->SpawnActor<APointLight>();
+        //             LightActor->SetActorLabel(TEXT("OBJ_POINTLIGHT"));
+        //             break;
+        //         }
+        //         case OBJ_DIRECTIONALLGIHT:
+        //         {
+        //             ADirectionalLight* LightActor = World->SpawnActor<ADirectionalLight>();
+        //             LightActor->SetActorLabel(TEXT("OBJ_DIRECTIONALLGIHT"));
+        //             break;
+        //         }
+        //         case OBJ_AMBIENTLIGHT:
+        //         {
+        //             AAmbientLight* LightActor = World->SpawnActor<AAmbientLight>();
+        //             LightActor->SetActorLabel(TEXT("OBJ_AMBIENTLIGHT"));
+        //             break;
+        //         }
+        //         case OBJ_PARTICLE:
+        //         {
+        //             SpawnedActor = World->SpawnActor<AActor>();
+        //             SpawnedActor->SetActorLabel(TEXT("OBJ_PARTICLE"));
+        //             UParticleSubUVComponent* ParticleComponent = SpawnedActor->AddComponent<UParticleSubUVComponent>();
+        //             ParticleComponent->SetTexture(L"Assets/Texture/T_Explosion_SubUV.png");
+        //             ParticleComponent->SetRowColumnCount(6, 6);
+        //             ParticleComponent->SetRelativeScale3D(FVector(10.0f, 10.0f, 1.0f));
+        //             ParticleComponent->Activate();
+        //             SpawnedActor->SetActorTickInEditor(true);
+        //             break;
+        //         }
+        //         case OBJ_TEXT:
+        //         {
+        //             SpawnedActor = World->SpawnActor<AActor>();
+        //             SpawnedActor->SetActorLabel(TEXT("OBJ_TEXT"));
+        //             UTextComponent* TextComponent = SpawnedActor->AddComponent<UTextComponent>();
+        //             TextComponent->SetTexture(L"Assets/Texture/font.png");
+        //             TextComponent->SetRowColumnCount(106, 106);
+        //             TextComponent->SetText(L"안녕하세요 Jungle 1");
+        //             
+        //             break;
+        //         }
+        //         case OBJ_FIREBALL:
+        //         {
+        //             SpawnedActor = World->SpawnActor<AFireballActor>();
+        //             SpawnedActor->SetActorLabel(TEXT("OBJ_FIREBALL"));
+        //
+        //             break;
+        //         }
+        //         case OBJ_FOG:
+        //         {
+        //             SpawnedActor = World->SpawnActor<AHeightFogActor>();
+        //             SpawnedActor->SetActorLabel(TEXT("OBJ_FOG"));
+        //             break;
+        //         }
+        //         case OBJ_TRIANGLE:
+        //         case OBJ_CAMERA:
+        //         case OBJ_PLAYER:
+        //         case OBJ_END:
+        //             break;
+        //         }
+        //
+        //         if (SpawnedActor)
+        //         {
+        //             UEditorEngine* Engine = Cast<UEditorEngine>(GEngine);
+        //             Engine->SelectActor(Engine->GetSelectedActor());
+        //         }
+        //     }
+        // }
+        // ImGui::EndPopup();
+        struct Actor {
+            const char* category;
             const char* label;
             int obj;
         };
 
-        static const Primitive primitives[] = {
-            { .label= "Cube",      .obj= OBJ_CUBE },
-            { .label= "Sphere",    .obj= OBJ_SPHERE },
-            { .label= "PointLight", .obj= OBJ_POINTLIGHT },
-            { .label= "SpotLight", .obj= OBJ_SPOTLIGHT },
-            { .label= "DirectionalLight", .obj= OBJ_DIRECTIONALLGIHT },
-            { .label= "AmbientLight", .obj= OBJ_AMBIENTLIGHT },
-            { .label= "Particle",  .obj= OBJ_PARTICLE },
-            { .label= "Text",      .obj= OBJ_TEXT },
-            { .label= "Fireball",  .obj = OBJ_FIREBALL},
-            { .label= "Fog",       .obj= OBJ_FOG }
-        };
+        // 카테고리 순서대로 정렬된 배열
+        static const Actor actors[] = {
+            { "Defaults", "Actor", OBJ_ACTOR},
+            // 🔦 라이트
+            { "Lights", "Directional Light", OBJ_DIRECTIONALLGIHT },
+            { "Lights", "Point Light",     OBJ_POINTLIGHT },
+            { "Lights", "Spot Light",      OBJ_SPOTLIGHT },
+    { "Lights", "Ambient Light",      OBJ_AMBIENTLIGHT },
 
-        for (const auto& primitive : primitives)
+            // 🔷 셰이프
+            { "Shapes", "Cube",            OBJ_CUBE },
+            { "Shapes", "Sphere",          OBJ_SPHERE },
+
+            // ✨ 효과
+            { "Effects", "Particle",       OBJ_PARTICLE },
+            { "Effects", "Text",           OBJ_TEXT },
+                { "Effects", "Fog",       OBJ_FOG },
+            //  Custom Object
+            { "Customs", "FireBall",       OBJ_FIREBALL },
+        };
+        const char* currentCategory = nullptr;
+
+        for (const auto& actor : actors)
         {
-            if (ImGui::Selectable(primitive.label))
+            // 카테고리 헤더 추가
+            if (currentCategory != actor.category)
             {
-                // GEngineLoop.GetWorld()->SpawnObject(static_cast<OBJECTS>(primitive.obj));
+                if (currentCategory != nullptr)
+                {
+                    ImGui::Separator(); // 카테고리 구분선
+                }
+                ImGui::PushFont(IconFont);
+                ImGui::TextColored(ImVec4(0.8f, 0.8f, 0.2f, 1), "\ue9a8"); // 헤더
+                ImGui::PopFont();
+                ImGui::SameLine();
+                ImGui::TextColored(ImVec4(0.8f, 0.8f, 0.2f, 1), "%s", actor.category); // 헤더
+                currentCategory = actor.category;
+            }
+
+            // 액터 생성 버튼
+            if (ImGui::Selectable(actor.label))
+            {
                 UWorld* World = GEngine->ActiveWorld;
                 AActor* SpawnedActor = nullptr;
-                switch (static_cast<OBJECTS>(primitive.obj))
+                switch (static_cast<OBJECTS>(actor.obj))
                 {
-                case OBJ_SPHERE:
-                {
+                case OBJ_ACTOR:
                     SpawnedActor = World->SpawnActor<AActor>();
-                    SpawnedActor->SetActorLabel(TEXT("OBJ_SPHERE"));
-                    USphereComp* SphereComp = SpawnedActor->AddComponent<USphereComp>();
-                    SphereComp->SetStaticMesh(FObjManager::GetStaticMesh(L"Contents/Sphere.obj"));
+                    SpawnedActor->SetActorLabel(TEXT("OBJ_ACTOR"));
+                    SpawnedActor->AddComponent<USceneComponent>();
                     break;
-                }
+                    // 🔷 셰이프
                 case OBJ_CUBE:
                 {
-                    // TODO: 다른 부분들 전부 Actor만 소환하도록 하고, Component 생성은 Actor가 자체적으로 하도록 변경.
-                    ACube* CubeActor = World->SpawnActor<ACube>();
-                    CubeActor->SetActorLabel(TEXT("OBJ_CUBE"));
-                    break;
+                        ACube* CubeActor = World->SpawnActor<ACube>();
+                        CubeActor->SetActorLabel(TEXT("OBJ_CUBE"));
+                        break;
                 }
-
-                case OBJ_SPOTLIGHT:
+                case OBJ_SPHERE:
                 {
-                    ASpotLight* SpotActor = World->SpawnActor<ASpotLight>();
-                    SpotActor->SetActorLabel(TEXT("OBJ_SPOTLIGHT"));
-                    break;
-                }
-                case OBJ_POINTLIGHT:
-                {
-                    APointLight* LightActor = World->SpawnActor<APointLight>();
-                    LightActor->SetActorLabel(TEXT("OBJ_POINTLIGHT"));
-                    break;
+                        SpawnedActor = World->SpawnActor<AActor>();
+                        SpawnedActor->SetActorLabel(TEXT("OBJ_SPHERE"));
+                        USphereComp* SphereComp = SpawnedActor->AddComponent<USphereComp>();
+                        SphereComp->SetStaticMesh(FObjManager::GetStaticMesh(L"Contents/Sphere.obj"));
+                        break;
                 }
                 case OBJ_DIRECTIONALLGIHT:
-                {
-                    ADirectionalLight* LightActor = World->SpawnActor<ADirectionalLight>();
-                    LightActor->SetActorLabel(TEXT("OBJ_DIRECTIONALLGIHT"));
-                    break;
-                }
+                    {
+                        ADirectionalLight* LightActor = World->SpawnActor<ADirectionalLight>();
+                        LightActor->SetActorLabel(TEXT("OBJ_DIRECTIONALLGIHT"));
+                        break;
+                    }
+                case OBJ_POINTLIGHT:
+                    {
+                        APointLight* LightActor = World->SpawnActor<APointLight>();
+                        LightActor->SetActorLabel(TEXT("OBJ_POINTLIGHT"));
+                        break;
+                    }
+                case OBJ_SPOTLIGHT:
+                    {
+                        ASpotLight* SpotActor = World->SpawnActor<ASpotLight>();
+                        SpotActor->SetActorLabel(TEXT("OBJ_SPOTLIGHT"));
+                        break;
+                    }
                 case OBJ_AMBIENTLIGHT:
-                {
-                    AAmbientLight* LightActor = World->SpawnActor<AAmbientLight>();
-                    LightActor->SetActorLabel(TEXT("OBJ_AMBIENTLIGHT"));
-                    break;
-                }
+                    {
+                        AAmbientLight* LightActor = World->SpawnActor<AAmbientLight>();
+                        LightActor->SetActorLabel(TEXT("OBJ_AMBIENTLIGHT"));
+                        break;
+                    }
+                // ✨ 효과
                 case OBJ_PARTICLE:
-                {
-                    SpawnedActor = World->SpawnActor<AActor>();
-                    SpawnedActor->SetActorLabel(TEXT("OBJ_PARTICLE"));
-                    UParticleSubUVComponent* ParticleComponent = SpawnedActor->AddComponent<UParticleSubUVComponent>();
-                    ParticleComponent->SetTexture(L"Assets/Texture/T_Explosion_SubUV.png");
-                    ParticleComponent->SetRowColumnCount(6, 6);
-                    ParticleComponent->SetRelativeScale3D(FVector(10.0f, 10.0f, 1.0f));
-                    ParticleComponent->Activate();
-                    SpawnedActor->SetActorTickInEditor(true);
-                    break;
-                }
+                    {
+                        SpawnedActor = World->SpawnActor<AActor>();
+                        SpawnedActor->SetActorLabel(TEXT("OBJ_PARTICLE"));
+                        UParticleSubUVComponent* ParticleComponent = SpawnedActor->AddComponent<UParticleSubUVComponent>();
+                        ParticleComponent->SetTexture(L"Assets/Texture/T_Explosion_SubUV.png");
+                        ParticleComponent->SetRowColumnCount(6, 6);
+                        ParticleComponent->SetRelativeScale3D(FVector(10.0f, 10.0f, 1.0f));
+                        ParticleComponent->Activate();
+                        SpawnedActor->SetActorTickInEditor(true);
+                        break;
+                    }
                 case OBJ_TEXT:
-                {
-                    SpawnedActor = World->SpawnActor<AActor>();
-                    SpawnedActor->SetActorLabel(TEXT("OBJ_TEXT"));
-                    UTextComponent* TextComponent = SpawnedActor->AddComponent<UTextComponent>();
-                    TextComponent->SetTexture(L"Assets/Texture/font.png");
-                    TextComponent->SetRowColumnCount(106, 106);
-                    TextComponent->SetText(L"안녕하세요 Jungle 1");
-                    
-                    break;
-                }
-                case OBJ_FIREBALL:
-                {
-                    SpawnedActor = World->SpawnActor<AFireballActor>();
-                    SpawnedActor->SetActorLabel(TEXT("OBJ_FIREBALL"));
+                    {
+                        SpawnedActor = World->SpawnActor<AActor>();
+                        SpawnedActor->SetActorLabel(TEXT("OBJ_TEXT"));
+                        UTextComponent* TextComponent = SpawnedActor->AddComponent<UTextComponent>();
+                        TextComponent->SetTexture(L"Assets/Texture/font.png");
+                        TextComponent->SetRowColumnCount(106, 106);
+                        TextComponent->SetText(L"안녕하세요 Jungle 1");
 
-                    break;
-                }
+                        break;
+                    }
+                case OBJ_FIREBALL:
+                    {
+                        SpawnedActor = World->SpawnActor<AFireballActor>();
+                        SpawnedActor->SetActorLabel(TEXT("OBJ_FIREBALL"));
+
+                        break;
+                    }
                 case OBJ_FOG:
-                {
-                    SpawnedActor = World->SpawnActor<AHeightFogActor>();
-                    SpawnedActor->SetActorLabel(TEXT("OBJ_FOG"));
-                    break;
-                }
+                    {
+                        SpawnedActor = World->SpawnActor<AHeightFogActor>();
+                        SpawnedActor->SetActorLabel(TEXT("OBJ_FOG"));
+                        break;
+                    }
                 case OBJ_TRIANGLE:
                 case OBJ_CAMERA:
                 case OBJ_PLAYER:
@@ -515,7 +662,6 @@ void ControlEditorPanel::CreatePIEButton(ImVec2 ButtonSize, ImFont* IconFont) co
         UE_LOG(LogLevel::Display, TEXT("Stop Button Clicked"));
         Engine->EndPIE();
     }
-    
 }
 
 // code is so dirty / Please refactor

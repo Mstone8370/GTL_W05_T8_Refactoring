@@ -54,17 +54,17 @@ void PropertyEditorPanel::Render()
     if (!Engine)
         return;
     AEditorPlayer* player = Engine->GetEditorPlayer();
-    AActor* PickedActor = Engine->GetSelectedActor();
-    if (PickedActor)
+    AActor* SelectedActor = Engine->GetSelectedActor();
+    if (SelectedActor)
     {
         ImGui::SetItemDefaultFocus();
         // TreeNode 배경색을 변경 (기본 상태)
         ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
         if (ImGui::TreeNodeEx("Transform", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) // 트리 노드 생성
         {
-            Location = PickedActor->GetActorLocation();
-            Rotation = PickedActor->GetActorRotation();
-            Scale = PickedActor->GetActorScale();
+            Location = SelectedActor->GetActorLocation();
+            Rotation = SelectedActor->GetActorRotation();
+            Scale = SelectedActor->GetActorScale();
 
             FImGuiWidget::DrawVec3Control("Location", Location, 0, 85);
             ImGui::Spacing();
@@ -75,9 +75,9 @@ void PropertyEditorPanel::Render()
             FImGuiWidget::DrawVec3Control("Scale", Scale, 0, 85);
             ImGui::Spacing();
 
-            PickedActor->SetActorLocation(Location);
-            PickedActor->SetActorRotation(Rotation);
-            PickedActor->SetActorScale(Scale);
+            SelectedActor->SetActorLocation(Location);
+            SelectedActor->SetActorRotation(Rotation);
+            SelectedActor->SetActorScale(Scale);
 
             std::string coordiButtonLabel;
             if (player->GetCoordMode() == ECoordMode::CDM_WORLD)
@@ -94,7 +94,7 @@ void PropertyEditorPanel::Render()
         ImGui::PopStyleColor();
     }
 
-    if (PickedActor)
+    if (SelectedActor)
     {
         if (ImGui::Button("Duplicate"))
         {
@@ -149,8 +149,8 @@ void PropertyEditorPanel::Render()
     //        ImGui::PopStyleColor();
     //    }
 
-    if(PickedActor)
-        if (UPointLightComponent* pointlightObj = PickedActor->GetComponentByClass<UPointLightComponent>())
+    if(SelectedActor)
+        if (UPointLightComponent* pointlightObj = SelectedActor->GetComponentByClass<UPointLightComponent>())
         {
             ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
 
@@ -176,8 +176,8 @@ void PropertyEditorPanel::Render()
             ImGui::PopStyleColor();
         }
 
-    if(PickedActor)
-        if (USpotLightComponent* spotlightObj = PickedActor->GetComponentByClass<USpotLightComponent>())
+    if(SelectedActor)
+        if (USpotLightComponent* spotlightObj = SelectedActor->GetComponentByClass<USpotLightComponent>())
         {
             ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
 
@@ -215,8 +215,8 @@ void PropertyEditorPanel::Render()
             ImGui::PopStyleColor();
         }
 
-    if (PickedActor)
-        if (UDirectionalLightComponent* dirlightObj = PickedActor->GetComponentByClass<UDirectionalLightComponent>())
+    if (SelectedActor)
+        if (UDirectionalLightComponent* dirlightObj = SelectedActor->GetComponentByClass<UDirectionalLightComponent>())
         {
             ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
 
@@ -239,8 +239,8 @@ void PropertyEditorPanel::Render()
             ImGui::PopStyleColor();
         }
 
-    if(PickedActor)
-        if (UAmbientLightComponent* ambientLightObj = PickedActor->GetComponentByClass<UAmbientLightComponent>())
+    if(SelectedActor)
+        if (UAmbientLightComponent* ambientLightObj = SelectedActor->GetComponentByClass<UAmbientLightComponent>())
         {
             ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
 
@@ -255,8 +255,8 @@ void PropertyEditorPanel::Render()
             ImGui::PopStyleColor();
         }
 
-    if (PickedActor)
-        if (UProjectileMovementComponent* ProjectileComp = (PickedActor->GetComponentByClass<UProjectileMovementComponent>()))
+    if (SelectedActor)
+        if (UProjectileMovementComponent* ProjectileComp = (SelectedActor->GetComponentByClass<UProjectileMovementComponent>()))
         {
             ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
 
@@ -292,8 +292,8 @@ void PropertyEditorPanel::Render()
             ImGui::PopStyleColor();
         }
     // TODO: 추후에 RTTI를 이용해서 프로퍼티 출력하기
-    if (PickedActor)
-        if (UTextComponent* textOBj = Cast<UTextComponent>(PickedActor->GetRootComponent()))
+    if (SelectedActor)
+        if (UTextComponent* textOBj = Cast<UTextComponent>(SelectedActor->GetRootComponent()))
         {
             ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
             if (ImGui::TreeNodeEx("Text Component", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) // 트리 노드 생성
@@ -328,15 +328,15 @@ void PropertyEditorPanel::Render()
         }
 
     // TODO: 추후에 RTTI를 이용해서 프로퍼티 출력하기
-    if (PickedActor)
-        if (UStaticMeshComponent* StaticMeshComponent = Cast<UStaticMeshComponent>(PickedActor->GetRootComponent()))
+    if (SelectedActor)
+        if (UStaticMeshComponent* StaticMeshComponent = Cast<UStaticMeshComponent>(SelectedActor->GetRootComponent()))
         {
             RenderForStaticMesh(StaticMeshComponent);
             RenderForMaterial(StaticMeshComponent);
         }
 
-    if (PickedActor)
-        if (UHeightFogComponent* FogComponent = Cast<UHeightFogComponent>(PickedActor->GetRootComponent()))
+    if (SelectedActor)
+        if (UHeightFogComponent* FogComponent = Cast<UHeightFogComponent>(SelectedActor->GetRootComponent()))
         {
             ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
             if (ImGui::TreeNodeEx("Exponential Height Fog", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) // 트리 노드 생성
