@@ -16,6 +16,7 @@
 #include "D3D11RHI/DXDShaderManager.h"
 
 #include "Components/StaticMeshComponent.h"
+#include "Components/Light/PointLightComponent.h"
 
 #include "BaseGizmos/GizmoBaseComponent.h"
 #include "Engine/EditorEngine.h"
@@ -222,7 +223,16 @@ void FStaticMeshRenderPass::UpdateLitUnlitConstant(int32 isLit) const
     BufferManager->UpdateConstantBuffer(TEXT("FLitUnlitConstants"), Data);
 }
 
-void FStaticMeshRenderPass::RenderPrimitive(FStaticMeshRenderData* RenderData, TArray<FStaticMaterial*> Materials, TArray<UMaterial*> OverrideMaterials, int SelectedSubMeshIndex) const
+void FStaticMeshRenderPass::UpdateLightMatrixConstant( FMatrix& LightView,  FMatrix& LgihtProjection)
+{
+    FLightMatrix ObjectData = {};
+    ObjectData.LightViewMat = LightView;
+    ObjectData.LightProjectMat = LgihtProjection;
+    
+    BufferManager->UpdateConstantBuffer(TEXT("FLightMatrix"), ObjectData);
+}
+
+void FStaticMeshRenderPass::RenderPrimitive(FStaticMeshRenderData* RenderData, TArray<FStaticMaterial*> Materials, TArray<UMaterial*> OverrideMaterials, int SelectedSubMeshIndex)
 {
     UINT Stride = sizeof(FStaticMeshVertex);
     UINT Offset = 0;
@@ -244,7 +254,25 @@ void FStaticMeshRenderPass::RenderPrimitive(FStaticMeshRenderData* RenderData, T
         Graphics->DeviceContext->DrawIndexed(RenderData->Indices.Num(), 0, 0);
         return;
     }
-
+#pragma region ShadowMap
+    ID3D11ShaderResourceView* ShadowSrv = nullptr;
+    ID3D11SamplerState*       PCFSampler = nullptr;
+    for (auto light :  TObjectRange<UPointLightComponent>())
+    {
+        light->UpdateViewMatrix();
+        UpdateLightMatrixConstant(light->view[0], light->projection);
+        ShadowSrv = light->faceSRVs[0];
+        PCFSampler = light->PointShadowComparisonSampler;
+    }
+     Graphics->DeviceContext->PSSetShaderResources(
+    2,         // 시작 슬롯 = 2 → t2
+    1,         // 한 개 바인딩
+    &ShadowSrv);     
+     Graphics->DeviceContext->PSSetSamplers(
+        2,          // 시작 슬롯 = 0 → s0
+        1,
+        &PCFSampler);
+#pragma endregion
     for (int SubMeshIndex = 0; SubMeshIndex < RenderData->MaterialSubsets.Num(); SubMeshIndex++)
     {
         uint32 MaterialIndex = RenderData->MaterialSubsets[SubMeshIndex].MaterialIndex;
@@ -261,7 +289,7 @@ void FStaticMeshRenderPass::RenderPrimitive(FStaticMeshRenderData* RenderData, T
         {
             MaterialUtils::UpdateMaterial(BufferManager, Graphics, Materials[MaterialIndex]->Material->GetMaterialInfo());
         }
-
+        
         uint32 StartIndex = RenderData->MaterialSubsets[SubMeshIndex].IndexStart;
         uint32 IndexCount = RenderData->MaterialSubsets[SubMeshIndex].IndexCount;
         Graphics->DeviceContext->DrawIndexed(IndexCount, StartIndex, 0);
@@ -319,6 +347,11 @@ void FStaticMeshRenderPass::RenderAllStaticMeshes(const std::shared_ptr<FEditorV
 
 void FStaticMeshRenderPass::Render(const std::shared_ptr<FEditorViewportClient>& Viewport)
 {
+#pragma region ShadowMap
+    ID3D11Buffer* LightBuffer = BufferManager->GetConstantBuffer(TEXT("FLightMatrix"));
+    Graphics->DeviceContext->VSSetConstantBuffers(1, 1, &LightBuffer);
+    Graphics->DeviceContext->PSSetConstantBuffers(5, 1, &LightBuffer);
+#pragma endregion
     const EResourceType ResourceType = EResourceType::ERT_Scene;
     FViewportResource* ViewportResource = Viewport->GetViewportResource();
     FRenderTargetRHI* RenderTargetRHI = ViewportResource->GetRenderTarget(ResourceType);

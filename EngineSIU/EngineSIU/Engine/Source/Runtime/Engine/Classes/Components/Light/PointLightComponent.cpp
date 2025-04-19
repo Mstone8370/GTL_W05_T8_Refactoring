@@ -152,6 +152,12 @@ void UPointLightComponent::CreateShadowMapResources()
         dsvDesc.Texture2DArray.ArraySize       = 1;
         GEngineLoop.GraphicDevice.Device->CreateDepthStencilView(PointDepthCubeTex, &dsvDesc, &PointShadowDSV[i]);
     }
+    D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+    srvDesc.Format                    = DXGI_FORMAT_R32_FLOAT;
+    srvDesc.ViewDimension             = D3D11_SRV_DIMENSION_TEXTURECUBE;
+    srvDesc.TextureCube.MipLevels     = 1;
+    GEngineLoop.GraphicDevice.Device->CreateShaderResourceView(PointDepthCubeTex, &srvDesc, &PointShadowSRV);
+
     for(int face = 0; face < 6; ++face) {
         D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
         srvDesc.Format                    = DXGI_FORMAT_R32_FLOAT;              // R32_TYPELESS -> R32_FLOAT
@@ -163,6 +169,26 @@ void UPointLightComponent::CreateShadowMapResources()
         GEngineLoop.GraphicDevice.Device->CreateShaderResourceView(
         PointDepthCubeTex, &srvDesc, &faceSRVs[face]);
     }
+    D3D11_SAMPLER_DESC sampDesc = {};
+    // 비교 샘플링 필터: MIN/MAG은 Linear, MIP은 Point (PCF용)
+    sampDesc.Filter         = D3D11_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
+    // 텍스처 좌표가 [0,1] 범위를 벗어날 때 경계색(깊이=1)으로 처리
+    sampDesc.AddressU       = D3D11_TEXTURE_ADDRESS_BORDER;
+    sampDesc.AddressV       = D3D11_TEXTURE_ADDRESS_BORDER;
+    sampDesc.AddressW       = D3D11_TEXTURE_ADDRESS_BORDER;
+    // 테두리 색상: 최대조명(깊이 비교 시 항상 lit 되게)
+    sampDesc.BorderColor[0] = 1.0f;
+    sampDesc.BorderColor[1] = 1.0f;
+    sampDesc.BorderColor[2] = 1.0f;
+    sampDesc.BorderColor[3] = 1.0f;
+    // 비교 함수: “현재 샘플 깊이 <= 맵에 저장된 깊이” 면 lit
+    sampDesc.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
+    // MIP 레벨 범위
+    sampDesc.MinLOD         = 0;
+    sampDesc.MaxLOD         = D3D11_FLOAT32_MAX;
+
+    // 2) SamplerState 생성
+    HRESULT hr = GEngineLoop.GraphicDevice.Device->CreateSamplerState(&sampDesc, &PointShadowComparisonSampler);
     projection = JungleMath::CreateProjectionMatrix(60.0f, 1.0f, 0.01f, GetRadius());
 }
 

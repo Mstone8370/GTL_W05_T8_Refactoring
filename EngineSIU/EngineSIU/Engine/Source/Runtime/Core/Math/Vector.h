@@ -334,7 +334,7 @@ inline float FVector::LengthSquared() const
     return X * X + Y * Y + Z * Z;
 }
 
-inline bool FVector::Normalize(float Tolerance)
+inline bool FVector::Normalize(float Tolerance) // 사용의 위험이 있습니다.
 {
     const float SquareSum = X * X + Y * Y + Z * Z;
     if (SquareSum > Tolerance)

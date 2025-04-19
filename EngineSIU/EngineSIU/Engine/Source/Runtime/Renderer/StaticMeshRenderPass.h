@@ -40,8 +40,10 @@ public:
     void UpdateObjectConstant(const FMatrix& WorldMatrix, const FVector4& UUIDColor, bool bIsSelected) const;
   
     void UpdateLitUnlitConstant(int32 isLit) const;
-
-    void RenderPrimitive(FStaticMeshRenderData* RenderData, TArray<FStaticMaterial*> Materials, TArray<UMaterial*> OverrideMaterials, int SelectedSubMeshIndex) const;
+#pragma region ShadowMap
+    void UpdateLightMatrixConstant(FMatrix& LightView, FMatrix& LgihtProjection);
+#pragma endregion
+    void RenderPrimitive(FStaticMeshRenderData* RenderData, TArray<FStaticMaterial*> Materials, TArray<UMaterial*> OverrideMaterials, int SelectedSubMeshIndex);
     
     void RenderPrimitive(ID3D11Buffer* pBuffer, UINT numVertices) const;
 
